@@ -3,9 +3,11 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
+#include "Playlist.hpp"
 using namespace std;
-
+/*
 struct songNode
 {
     string name;
@@ -22,7 +24,7 @@ struct songNode
       prioritynum = 0;
     }
 };
-
+*/
 struct node
 {
     char name;
@@ -47,13 +49,20 @@ class Trie
     public:
         Trie();
         ~Trie();
-        void addSong(songNode song);
+        void addSong(songNode *song);
+        //void deleteSong(songNode *song);
         songNode* findSong(string name, string star);
         char getChar(int num);
         void printTrie();
+        void printTop5(string search);
         node* gethead();
+        void maxchecker(songNode* song);
+        void traversalHelper(node* node);
+        songNode* getTop5(int num);
     private:
         node* head;
+        songNode* top5[5];
+        int numtop5;
 };
 
 #endif
