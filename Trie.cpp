@@ -1,6 +1,7 @@
 #include "Trie.hpp"
 #include <iostream>
 #include <string>
+#include <vector>
 
 
 using namespace std;
@@ -48,18 +49,6 @@ node* createTriNode(char name, node* parent)
   return newnode;
 }
 
-void traversalHelper(node* node)
-{
-  for (int i = 0; i < 26; i++)
-  {
-    if (node->children[i] != NULL)
-    {
-      traversalHelper(node->children[i]);
-    }
-  }
-  //do whatever you need here if delete you need to delete children as well
-}
-
 void destructorHelp(node* node1, node* head)
 {
   if (node1 != NULL)
@@ -69,27 +58,18 @@ void destructorHelp(node* node1, node* head)
     {
       if (node1->children[i] != NULL)
       {
-        x = false;
+        destructorHelp(node1->children[i], head);
       }
     }
     if (x == true)
     {
       if (node1 != head)
       {
-        cout<<"Deleting node "<<node1->name<<endl;
         delete node1;
       }
       return;
     }
-    for (int j = 0; j < 26; j++)
-    {
-      if (node1->children[j] != NULL)
-      {
-        cout<<"Calling destructor for node "<<node1->children[j]->name<<endl;
-        destructorHelp(node1->children[j], head);
-      }
-    }
-  }
+   }
 }
 
 void triePrintHelper(node* node)
@@ -130,15 +110,15 @@ Trie::~Trie()
     head = NULL;
 }
 
-void Trie::addSong(songNode song)
+void Trie::addSong(songNode *song)
 {
     //cout<<"Started Addsong"<<endl;
     int child = 0;
     node* temp = head;
-    for (int i = 0; i < song.name.size(); i++)
+    for (int i = 0; i < song->name.size(); i++)
     {
         //cout<<"Starting on letter "<<song.name[i]<<endl;
-        child = getNum(song.name[i]);
+        child = getNum(song->name[i]);
         if (temp->children[child] != NULL)
         {
             //cout<<"Going to next node "<< temp->children[child]->name<<endl;
@@ -146,15 +126,15 @@ void Trie::addSong(songNode song)
         }
         else
         {
-            temp->children[child] = createTriNode(song.name[i], temp);
+            temp->children[child] = createTriNode(song->name[i], temp);
             temp = temp->children[child];
             //cout<<"Created new node "<<temp->name<<endl;
         }
-        if (i == song.name.size()-1)
+        if (i == song->name.size()-1)
         {
             if(temp->head == NULL)
             {
-                temp->head = &song;
+                temp->head = song;
                 //cout<<"Added song as first song"<<endl;
                 return;
             }
@@ -163,7 +143,7 @@ void Trie::addSong(songNode song)
             {
                 temp2 = temp2->next;
             }
-            temp2->next = &song;
+            temp2->next = song;
             temp->isempty = false;
             //cout<<"Added song as not first song"<<endl;
             return;
@@ -237,27 +217,94 @@ node* Trie::gethead()
   return head;
 }
 
-int main (){
-  Trie mytrie;
-  songNode song1;
-  song1.name = "dju";
-  song1.artist = "frt";
-  songNode song2;
-  song2.name = "djui";
-  song2.artist = "qwesd";
-  songNode song3;
-  song3.name = "djui";
-  song3.artist = "rrt";
-  songNode song4;
-  song4.name = "qwwef";
-  song4.artist = "dfr";
-  songNode song5;
-  song5.name = "fvddfv";
-  song5.artist = "werwref";
-  mytrie.addSong(song1);
-  mytrie.addSong(song2);
-  mytrie.addSong(song3);
-  mytrie.addSong(song4);
-  mytrie.addSong(song5);
-  mytrie.printTrie();
+void Trie::maxchecker(songNode* song)
+{
+   if (numtop5 < 5)
+   {
+     top5[numtop5] = song;
+     numtop5++;
+     return;
+   }
+   else
+   {
+     int min = 0;
+     for (int i = 0; i < 5; i++)
+     {
+       if (i != 0)
+       {
+         if (top5[min]->priorityNum > top5[i]->priorityNum)
+         {
+           min = i;
+         }
+       }
+     }
+     if (top5[min]->priorityNum < song->priorityNum)
+     {
+       top5[min] = song;
+     }
+   }
+}
+
+void Trie::traversalHelper(node* node)
+{
+  if (node != NULL)
+  {
+    bool x = true;
+    for (int i = 0; i < 26; i++)
+    {
+      if (node->children[i] != NULL)
+      {
+        //cout<<"Calling traversal"<<endl;
+        traversalHelper(node->children[i]);
+      }
+    }
+    if (node->head != NULL)
+    {
+      songNode* temp = node->head;
+      while (temp != NULL)
+      {
+        //cout<<"Calling maxchecker"<<endl;
+        maxchecker(temp);
+        temp = temp->next;
+      }
+    }
+   }
+}
+
+void Trie::printTop5(string name)
+{
+  for (int p = 0; p < 5; p++)
+  {
+    top5[p] = NULL;
+    numtop5 = 0;
+  }
+  node* temp = head;
+  int child = 0;
+  for (int i = 0; i < name.size(); i++)
+  {
+    child = getNum(name[i]);
+    if (temp->children[child] != NULL)
+    {
+      temp = temp->children[child];
+    }
+  }
+  traversalHelper(temp);
+  for (int j = 0; j < 5; j++)
+  {
+    if (top5[j] != NULL)
+    {
+      cout<<j+1<<". "<<top5[j]->name<<" by "<<top5[j]->artist<<endl;
+    }
+  }
+}
+songNode* Trie::getTop5(int num)
+{
+  if(num <=4)
+  {
+    return top5[num];
+  }
+  else
+  {
+    cout<<"Invalid Index"<<endl;
+  }
 }
