@@ -1,5 +1,8 @@
 #include <iostream>
-#include "MusicLibrary.hh"
+#include <vector>
+#include <queue>
+#include "Playlist.hpp"
+#include "MusicLibrary.hpp"
 
 using namespace std;
 
@@ -7,29 +10,73 @@ using namespace std;
 //add to queue and delete from queue options
 MusicLibrary::MusicLibrary()
 {
-  length[0] = 0;
-  length[1] = 0;
-  next = NULL;
-  priorityNum = 0;
+
 }
 
 MusicLibrary::~MusicLibrary()
 {
-  //deletes entire Library
 
-  songNode *curr = head;
-  songNode *next;
+}
+/*
+void MusicLibrary::removeSong(string name,string artist)
+{
+  songNode *temp = search(name,artist);
+  mytrie.deleteSong(temp);
+}
+*/
+void MusicLibrary::viewSongInfo(string songName, string artist)
+{
+  songNode *temp = search(songName,artist);
+  cout<<endl<<endl;
+  cout<<"________________________________________"<<endl;
+  cout<<"Song Name: "<<temp->name<<endl;
+  cout<<"Artist Name "<<temp->artist<<endl;
+  cout<<"Genre: "<<temp->genre<<endl;
+  cout<<"priorityNum: "<<temp->priorityNum<<endl;
+  cout<<"________________________________________"<<endl;
+}
 
-  while (curr != NULL)
+void MusicLibrary::shuffle(string playlistName)
+{
+  for(int i = 0; i < myplaylists.size();i++)
   {
-    next = curr;
-    curr = curr->next;
-    delete next;
+    string name = myplaylists[i].getName();
+    if(playlistName == name)
+    {
+      myplaylists[i].shufflePlaylist();
+    }
   }
-  if (curr == NULL)
+}
+void MusicLibrary::createPlaylist(string name2)
+{
+  Playlist newPlaylist;
+  newPlaylist.changeName(name2);
+  myplaylists.push_back(newPlaylist);
+}
+
+void MusicLibrary::addTooPlaylist(string playlistName,string songName,string artist)
+{
+  for(int i = 0; i < myplaylists.size();i++)
   {
-    cout << "Library deleted" << endl;
-    head = NULL;
+    string name = myplaylists[i].getName();
+    if(playlistName == name)
+    {
+      songNode *temp = search(songName,artist);
+      myplaylists[i].addSong(temp);
+    }
+  }
+}
+void MusicLibrary::addToQueue(songNode* song)
+{
+  myqueue.push(song);
+}
+
+void MusicLibrary::displayAllPlaylist()
+{
+  for(int i = 0; i < myplaylists.size();i++)
+  {
+    string name = myplaylists[i].getName();
+    cout<<name<<endl;
   }
 }
 
@@ -40,42 +87,36 @@ void MusicLibrary::insertSong(string name, string artist, string genre, float pr
   newSong->artist = artist;
   newSong->genre = genre;
   newSong->priorityNum = priorityNum;
-
+  //newSong->mysong = mysong;
   mytrie.addSong(newSong);
 }
 
-// void MusicLibrary::removeSong(string songName)
-// {
-//   songNode* curr = head;
-//
-//   if (head->next == NULL)
-  // {
-  //   head = NULL;
-  //   return;
-  // }
-  //
-  // if (head->name == songName)
-  // {
-  //   head = curr->next;
-  //   return;
-  // }
-  //
-  // while (curr->next != NULL)
-  // {
-  //   if (curr->next->name == songName)
-  //   {
-  //     curr->next = curr->next->next;
-  //     return;
-  //   }
-  //   curr = curr->next;
-  // }
-
-  // cout << "Song not in library" << endl;
-//}
-
-void MusicLibrary::displayPlaylist()
+void MusicLibrary::displayPlaylist(string playlistName, bool x)
 {
-
+  //calll the displaylist function in playlists for myplaylists[num]
+  //boool represents which display output to call
+  if (x)
+  {
+    for(int i = 0; i < myplaylists.size();i++)
+    {
+      string name = myplaylists[i].getName();
+      if(playlistName == name)
+      {
+        myplaylists[i].displayMostRecent();
+      }
+    }
+  }
+  else
+  {
+    for(int i = 0; i < myplaylists.size();i++)
+    {
+      string name = myplaylists[i].getName();
+      if(playlistName == name)
+      {
+        myplaylists[i].displayDateAdded();
+      }
+    }
+  }
 }
 
 songNode* MusicLibrary::search(string songName, string artist)
@@ -83,25 +124,49 @@ songNode* MusicLibrary::search(string songName, string artist)
   songNode *returnNode = mytrie.findSong(songName, artist);
   return returnNode;
 }
-
-void MusicLibrary::skipSong()
+/*
+void MusicLibrary::removeFromQueue(songNode* song)
 {
-
-}
-
-void MusicLibrary::displayCurrentSong()
-{
-  songNode *curr = head;
-
-  if (head == NULL)
+  for (int i = 0; i < myqueue.size(); i++)
   {
-    cout << "No song being played" << endl;
+    if (song == myqueue[i])
+    {
+      myqueue.erase(myqueue.begin()+i);
+      return;
+    }
+  }
+  cout<<"Song not found in Queue"<<endl;
+}
+*/
+void MusicLibrary::viewQueue()
+{
+  if (myqueue.empty())
+  {
+    cout<<"Oh No! Looks like your Queue is Empty!"<<endl;
     return;
   }
-
+  vector<songNode*> temp;
+  int queuesize = myqueue.size();
+  cout<<"QueueSize is: "<<queuesize<<endl;
+  for (int i = 0; i < myqueue.size(); i++)
+  {
+    temp.push_back(myqueue.front());
+    cout<<temp[i]->name<<" by "<<temp[i]->artist<<endl;
+    myqueue.pop();
+  }
+  for (int j = queuesize; j >= 0; j--)
+  {
+    myqueue.push(temp[j]);
+  }
 }
 
-void MusicLibrary::createPlaylist()
+void MusicLibrary::displayTop5(string myword)
 {
+  mytrie.printTop5(myword);
+}
 
+songNode* MusicLibrary::getTop5(int num)
+{
+  songNode* temp = mytrie.getTop5(num);
+  return temp;
 }
