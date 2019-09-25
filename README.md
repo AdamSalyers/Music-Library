@@ -7,39 +7,22 @@ This is a Trie implemented data structure for a music library similiar to an ext
 -Written in C++, the Trie is completely implemented from scratch. Below is a sample of code outlining the definition of individual nodes.
 
 `struct node
-
 {
-
     char name;
-    
     node *children[26];
-    
     node* parent;
-    
     songNode* head;
-    
     bool isempty;
-    
     node()
-    
     {
-    
       parent = NULL;
-      
       head = NULL;
-      
       isempty = true;
-      
       for (int i = 0; i < 26; i++)
-      
       {
-      
         children[i] = NULL;
-        
       }
-      
     }
-    
 };`
 
 # Seeing the program in action
