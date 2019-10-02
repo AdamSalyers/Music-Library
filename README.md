@@ -31,6 +31,6 @@ This is a Trie implemented data structure for a music library similiar to an ext
 
 
 **This is an implementation of the create playlist function and the add too queue function,
-all the songs are stored in a Trie array then taken individually to a priority queue and
-a group of arrays. These of course only contain pointers to the songs the songs themselves
-are stored individually in the Trie.**
+all the songs are stored in a Trie array then pointers in a priority queue and arrays point to
+the song.**
+
