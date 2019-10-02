@@ -26,3 +26,5 @@ This is a Trie implemented data structure for a music library similiar to an ext
 };`
 
 # Seeing the program in action
+
+![](QueueSetup.gif)
