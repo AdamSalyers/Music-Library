@@ -34,3 +34,4 @@ This is a Trie implemented data structure for a music library similiar to an ext
 all the songs are stored in a Trie array then pointers in a priority queue and arrays point to
 the song.**
 
+![](autoupdatesearch.gif)
