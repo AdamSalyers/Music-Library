@@ -35,3 +35,13 @@ all the songs are stored in a Trie array then pointers in a priority queue and a
 the song.**
 
 ![](autoupdatesearch.gif)
+
+**This is an implementation of the auto-search and display function you can see the search function
+iterating through the trie based on the corresponding letters. It makes it very easy to store and 
+search with suggestions.**
+
+# More Info
+
+The Trie is comprised of Trie nodes that hold song nodes and 26 children, one for each letter. The
+song nodes comprise a songname, artist and prioritynum. They are randomized at the beginning, there
+is no storage for mp3's but the idea was to focus on Trie's.
